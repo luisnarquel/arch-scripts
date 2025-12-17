@@ -126,7 +126,8 @@ cp /boot/intel-ucode.img /efi/arch/
 ROOT_UUID=$(blkid -s UUID -o value /dev/nvme0n1p2)
 
 cat > /efi/limine.cfg << LIMINECFG
-timeout: 5
+timeout: 0
+verbose: yes
 default: Arch Linux
 
 /Arch Linux
