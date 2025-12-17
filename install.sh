@@ -66,8 +66,8 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Step 1: Set keyboard layout
-log "Setting keyboard layout to us-acentos..."
-loadkeys us-acentos
+log "Setting keyboard layout to us..."
+loadkeys us
 
 # Step 2: Disk configuration
 echo ""
@@ -112,6 +112,11 @@ mount -o compress=zstd,subvol=@home "$ROOT_PARTITION" /mnt/home
 mkdir -p /mnt/efi
 mount "$EFI_PARTITION" /mnt/efi
 
+# Step 5.5: Create early system configuration files
+log "Creating early system configuration..."
+mkdir -p /mnt/etc
+echo 'KEYMAP=us-acentos' > /mnt/etc/vconsole.conf
+
 # Step 6: Install base system
 log "Installing base system packages..."
 pacstrap -K /mnt base base-devel linux linux-firmware git btrfs-progs limine timeshift intel-ucode vim networkmanager pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber reflector zsh zsh-completions zsh-autosuggestions openssh man sudo
@@ -144,7 +149,6 @@ sed -i 's/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
 
 echo 'LANG=en_US.UTF-8' > /etc/locale.conf
-echo 'KEYMAP=us-acentos' > /etc/vconsole.conf
 
 # Set hostname
 echo "arch" > /etc/hostname
