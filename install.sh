@@ -115,7 +115,15 @@ pacman -S --noconfirm limine efibootmgr
 mkdir -p /efi/EFI/arch-limine
 cp /usr/share/limine/BOOTX64.EFI /efi/EFI/arch-limine/
 
-# ---- Limine config (ROOT OF ESP - RECOMMENDED) ----
+# ---- Copy kernel + initramfs + microcode to ESP ----
+mkdir -p /efi/arch
+
+cp /boot/vmlinuz-linux /efi/arch/
+cp /boot/initramfs-linux.img /efi/arch/
+cp /boot/initramfs-linux-fallback.img /efi/arch/
+cp /boot/intel-ucode.img /efi/arch/
+
+# ---- Limine config (ESP ROOT) ----
 ROOT_UUID=$(blkid -s UUID -o value /dev/nvme0n1p2)
 
 cat > /efi/limine.cfg << LIMINECFG
@@ -124,11 +132,11 @@ default: Arch Linux
 
 /Arch Linux
     protocol: linux
-    path: boot():/vmlinuz-linux
+    path: boot():/arch/vmlinuz-linux
     cmdline: root=UUID=$ROOT_UUID rw quiet loglevel=3
-    module_path: boot():/intel-ucode.img
-    module_path: boot():/initramfs-linux.img
-    module_path: boot():/initramfs-linux-fallback.img
+    module_path: boot():/arch/intel-ucode.img
+    module_path: boot():/arch/initramfs-linux.img
+    module_path: boot():/arch/initramfs-linux-fallback.img
 LIMINECFG
 
 # ---- EFI boot entry ----
