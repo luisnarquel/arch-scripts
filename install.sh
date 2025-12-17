@@ -95,7 +95,7 @@ log "Formatting EFI partition with FAT32..."
 mkfs.fat -F 32 "$EFI_PARTITION"
 
 log "Formatting root partition with BTRFS..."
-mkfs.btrfs "$ROOT_PARTITION"
+mkfs.btrfs -f "$ROOT_PARTITION"
 
 # Step 4: Create BTRFS subvolumes
 log "Creating BTRFS subvolumes..."
