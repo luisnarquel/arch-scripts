@@ -120,7 +120,6 @@ mkdir -p /efi/arch
 
 cp /boot/vmlinuz-linux /efi/arch/
 cp /boot/initramfs-linux.img /efi/arch/
-cp /boot/initramfs-linux-fallback.img /efi/arch/
 cp /boot/intel-ucode.img /efi/arch/
 
 # ---- Limine config (ESP ROOT) ----
@@ -136,7 +135,6 @@ default: Arch Linux
     cmdline: root=UUID=$ROOT_UUID rw quiet loglevel=3
     module_path: boot():/arch/intel-ucode.img
     module_path: boot():/arch/initramfs-linux.img
-    module_path: boot():/arch/initramfs-linux-fallback.img
 LIMINECFG
 
 # ---- EFI boot entry ----
