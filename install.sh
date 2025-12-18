@@ -140,7 +140,7 @@ default: Arch Linux
 /Arch Linux
     protocol: linux
     path: boot():/arch/vmlinuz-linux
-    cmdline: root=UUID=$ROOT_UUID rw quiet loglevel=3
+    cmdline: root=UUID=$ROOT_UUID rw rootflags=subvol=@,compress=zstd quiet loglevel=3
     module_path: boot():/arch/intel-ucode.img
     module_path: boot():/arch/initramfs-linux.img
 LIMINECFG
