@@ -125,9 +125,8 @@ cp /boot/intel-ucode.img /efi/arch/
 # ---- Limine config (ESP ROOT) ----
 ROOT_UUID=$(blkid -s UUID -o value /dev/nvme0n1p2)
 
-cat > /efi/limine.cfg << LIMINECFG
-timeout: 0
-verbose: yes
+cat > /efi/EFI/arch-limine/limine.conf << LIMINECFG
+timeout: 5
 default: Arch Linux
 
 /Arch Linux
