@@ -96,7 +96,7 @@ echo "Set root password"
 passwd
 
 # ---- User ----
-useradd -m -G wheel -s /bin/zsh narkas
+useradd -mG wheel narkas
 echo "Set password for narkas"
 passwd narkas
 
