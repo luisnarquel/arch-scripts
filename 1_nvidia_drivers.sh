@@ -21,6 +21,22 @@ sudo pacman -S --needed --noconfirm \
   nvidia-settings
 sudo pacman -S --needed --noconfirm nvidia-open-dkms
 
+# ===== Enable early KMS (mkinitcpio) =====
+log "Enabling early KMS in initramfs"
+
+MKINIT="/etc/mkinitcpio.conf"
+MODULES_LINE="MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)"
+
+if ! grep -q "nvidia_drm" "$MKINIT"; then
+  sudo sed -i "s/^MODULES=.*/$MODULES_LINE/" "$MKINIT"
+else
+  log "NVIDIA modules already present in mkinitcpio"
+fi
+
+# ===== Rebuild initramfs =====
+log "Rebuilding initramfs"
+sudo mkinitcpio -P
+
 # ===== Completion =====
 log "NVIDIA drivers installation complete"
 warn "Reboot REQUIRED"
