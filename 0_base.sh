@@ -13,6 +13,11 @@ if [[ -z "${SUDO_USER:-}" || "${SUDO_USER}" == "root" ]]; then
   error "Run via sudo from a non-root user (so AUR builds can run unprivileged)"
 fi
 
+SUDO_USER_HOME="$(getent passwd "${SUDO_USER}" | cut -d: -f6)"
+if [[ -z "${SUDO_USER_HOME}" ]]; then
+  error "Failed to determine home directory for ${SUDO_USER}"
+fi
+
 # ===== Time synchronization =====
 log "Enabling time synchronization"
 timedatectl set-ntp true
@@ -21,8 +26,10 @@ timedatectl set-ntp true
 log "Installing yay (AUR helper)"
 pacman -S --noconfirm --needed git base-devel go
 
-AUR_BUILD_DIR="/home/${SUDO_USER}/.cache/aur"
-install -d -m 0755 -o "${SUDO_USER}" -g "${SUDO_USER}" "${AUR_BUILD_DIR}"
+AUR_CACHE_DIR="${SUDO_USER_HOME}/.cache"
+GOCACHE_DIR="${AUR_CACHE_DIR}/go-build"
+AUR_BUILD_DIR="${AUR_CACHE_DIR}/aur"
+install -d -m 0755 -o "${SUDO_USER}" -g "${SUDO_USER}" "${AUR_CACHE_DIR}" "${GOCACHE_DIR}" "${AUR_BUILD_DIR}"
 
 YAY_DIR="${AUR_BUILD_DIR}/yay"
 if [[ -d "${YAY_DIR}/.git" ]]; then
@@ -31,7 +38,7 @@ else
   sudo -u "${SUDO_USER}" -H git clone https://aur.archlinux.org/yay.git "${YAY_DIR}"
 fi
 
-sudo -u "${SUDO_USER}" -H bash -lc "cd '${YAY_DIR}' && makepkg -c"
+sudo -u "${SUDO_USER}" -H env GOCACHE="${GOCACHE_DIR}" bash -lc "cd '${YAY_DIR}' && makepkg -c"
 
 YAY_PKG_FILE=$(find "${YAY_DIR}" -maxdepth 1 -type f -name '*.pkg.tar.*' ! -name '*-debug-*.pkg.tar.*' | sort | tail -n 1)
 if [[ -z "${YAY_PKG_FILE}" ]]; then
