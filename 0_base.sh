@@ -5,9 +5,6 @@ set -e
 
 source "$(dirname "$0")/common.sh"
 
-# ===== Sudo authentication =====
-sudo -v
-
 # ===== Time synchronization =====
 log "Enabling time synchronization"
 timedatectl set-ntp true
