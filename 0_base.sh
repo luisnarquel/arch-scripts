@@ -19,7 +19,7 @@ timedatectl set-ntp true
 
 # ===== Install yay =====
 log "Installing yay (AUR helper)"
-pacman -S --needed git base-devel go
+pacman -S --noconfirm --needed git base-devel go
 
 AUR_BUILD_DIR="/home/${SUDO_USER}/.cache/aur"
 install -d -m 0755 -o "${SUDO_USER}" -g "${SUDO_USER}" "${AUR_BUILD_DIR}"
@@ -38,6 +38,6 @@ if [[ -z "${YAY_PKG_FILE}" ]]; then
   error "Failed to locate built yay package in ${YAY_DIR}"
 fi
 
-pacman -U --needed "${YAY_PKG_FILE}"
+pacman -U --noconfirm --needed "${YAY_PKG_FILE}"
 
 log "Base-installation complete"
