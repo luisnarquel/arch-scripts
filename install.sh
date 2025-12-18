@@ -67,7 +67,15 @@ pacstrap -K /mnt \
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
 
 # ===== fstab =====
-genfstab -U /mnt >> /mnt/etc/fstab
+ROOT_UUID=$(blkid -s UUID -o value "$ROOT_PARTITION")
+EFI_UUID=$(blkid -s UUID -o value "$EFI_PARTITION")
+
+cat > /mnt/etc/fstab << EOF
+# /etc/fstab for Arch Linux on BTRFS with subvolumes
+UUID=$ROOT_UUID   /       btrfs   defaults,subvol=@,compress=zstd  0 1
+UUID=$ROOT_UUID   /home   btrfs   defaults,subvol=@home,compress=zstd 0 2
+UUID=$EFI_UUID    /efi    vfat    defaults 0 2
+EOF
 
 # ===== Chroot config script =====
 cat > /mnt/configure_system.sh << 'EOF'
