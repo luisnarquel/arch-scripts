@@ -7,6 +7,17 @@ source "$(dirname "$0")/common.sh"
 
 log "Starting NVIDIA drivers installation"
 
+# ===== Blacklist nouveau driver =====
+log "Blacklisting nouveau driver"
+sudo mkdir -p /etc/modprobe.d
+NOUVEAU_CONF="/etc/modprobe.d/blacklist-nouveau.conf"
+if [ ! -f "$NOUVEAU_CONF" ]; then
+  echo "blacklist nouveau" | sudo tee "$NOUVEAU_CONF" > /dev/null
+  echo "options nouveau modeset=0" | sudo tee -a "$NOUVEAU_CONF" > /dev/null
+else
+  log "Nouveau already blacklisted"
+fi
+
 # ===== Update system =====
 log "Updating system"
 sudo pacman -Syu --noconfirm
