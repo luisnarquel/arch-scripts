@@ -53,9 +53,10 @@ echo "KEYMAP=us-acentos" > /mnt/etc/vconsole.conf
 log "Installing base system"
 pacstrap -K /mnt \
   base base-devel linux linux-firmware intel-ucode \
-  git btrfs-progs limine timeshift \
-  networkmanager openssh sudo vim zsh \
-  pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber
+  git btrfs-progs limine networkmanager \
+  openssh sudo vim pipewire pipewire-alsa \
+  pipewire-pulse pipewire-jack wireplumber \
+  reflector man
 
 # ===== fstab =====
 ROOT_UUID=$(blkid -s UUID -o value "$ROOT_PARTITION")
