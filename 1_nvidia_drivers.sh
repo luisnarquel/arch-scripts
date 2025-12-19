@@ -16,16 +16,15 @@ sudo pacman -S --needed --noconfirm linux-headers
 
 # ===== Install NVIDIA proprietary drivers =====
 log "Installing NVIDIA proprietary drivers"
-sudo pacman -S --needed --noconfirm \
-  nvidia-utils \
-  nvidia-settings
+sudo pacman -S --needed --noconfirm nvidia-utils nvidia-settings
 sudo pacman -S --needed --noconfirm nvidia-open-dkms
+sudo pacman -S --needed --noconfirm lib32-nvidia-utils libva-nvidia-driver
 
 # ===== Enable early KMS (mkinitcpio) =====
 log "Enabling early KMS in initramfs"
 
 MKINIT="/etc/mkinitcpio.conf"
-MODULES_LINE="MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)"
+MODULES_LINE="MODULES=(i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)"
 
 if ! grep -q "nvidia_drm" "$MKINIT"; then
   sudo sed -i "s/^MODULES=.*/$MODULES_LINE/" "$MKINIT"

@@ -22,6 +22,11 @@ fi
 log "Enabling time synchronization"
 timedatectl set-ntp true
 
+# ===== Enable multilib =====
+log "Enabling multilib repository"
+sed -i '/^\[multilib\]/,/^Include = \/etc\/pacman.d\/mirrorlist/ s/^#//' /etc/pacman.conf
+pacman -Syu --noconfirm
+
 # ===== Install yay =====
 log "Installing yay (AUR helper)"
 pacman -S --noconfirm --needed git base-devel go
@@ -47,4 +52,12 @@ fi
 
 pacman -U --noconfirm --needed "${YAY_PKG_FILE}"
 
+# ===== Configure mkinitcpio preset =====
+log "Configuring mkinitcpio to save initramfs to /efi/arch"
+sed -i 's|default_image="/boot/initramfs-linux.img"|default_image="/efi/arch/initramfs-linux.img"|g' /etc/mkinitcpio.d/linux.preset
+sed -i 's|fallback_image="/boot/initramfs-linux-fallback.img"|fallback_image="/efi/arch/initramfs-linux-fallback.img"|g' /etc/mkinitcpio.d/linux.preset
+
 log "Base-installation complete"
+
+# ===== Install additional fonts =====
+sudo pacman -S ttf-jetbrains-mono-nerd
