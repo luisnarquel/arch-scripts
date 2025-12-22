@@ -1,6 +1,0 @@
-[SddmGreeterTheme]
-Type=sddm-theme
-Theme-API=2.0
-MainScript=Main.qml
-QtVersion=6
-ConfigFile=configs/silvia.conf
