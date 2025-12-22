@@ -24,8 +24,11 @@ timedatectl set-ntp true
 
 # ===== Enable multilib =====
 log "Enabling multilib repository"
-sed -i '/^\[multilib\]/,/^Include = \/etc\/pacman.d\/mirrorlist/ s/^#//' /etc/pacman.conf
-pacman -Syu --noconfirm
+sudo sed -i \
+  -e 's/^#\[multilib\]/[multilib]/' \
+  -e '/^\[multilib\]/{n; s/^#Include = \/etc\/pacman.d\/mirrorlist/Include = \/etc\/pacman.d\/mirrorlist/}' \
+  /etc/pacman.conf
+sudo pacman -Syu --noconfirm
 
 # ===== Install yay =====
 log "Installing yay (AUR helper)"
@@ -60,4 +63,4 @@ sed -i 's|fallback_image="/boot/initramfs-linux-fallback.img"|fallback_image="/e
 log "Base-installation complete"
 
 # ===== Install additional fonts =====
-sudo pacman -S ttf-jetbrains-mono-nerd
+sudo pacman -S --noconfirm --needed ttf-jetbrains-mono-nerd
