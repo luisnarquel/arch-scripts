@@ -12,7 +12,9 @@ log "Updating system"
 sudo pacman -Syu --noconfirm
 
 # ===== Install Hyprland and dependencies =====
-log "Installing Hyprland and terminal"
+log "Installing Hyprland"
+sudo pacman -S --needed --noconfirm egl-wayland
+sudo pacman -S --needed --noconfirm qt5-wayland qt6-wayland
 sudo pacman -S --needed --noconfirm hyprland kitty
 
 # ===== Configure Hyprland environment variables =====
