@@ -64,3 +64,31 @@ log "Base-installation complete"
 
 # ===== Install additional fonts =====
 sudo pacman -S --noconfirm --needed ttf-jetbrains-mono-nerd
+
+# ===== Enable Num Lock early (mkinitcpio) =====
+log "Enabling Num Lock during early boot (initramfs)"
+
+# Install mkinitcpio-numlock (AUR)
+sudo -u "${SUDO_USER}" -H yay -S --noconfirm --needed mkinitcpio-numlock
+
+MKINIT_CONF="/etc/mkinitcpio.conf"
+
+# Ensure numlock hook exists before encrypt
+if ! grep -q '\bnumlock\b' "${MKINIT_CONF}"; then
+  log "Adding numlock hook to mkinitcpio.conf"
+
+  sed -i \
+    -E 's/\(([^)]*)\)/(\1 numlock)/' \
+    "${MKINIT_CONF}"
+
+  # Move numlock before encrypt if encrypt exists
+  sed -i \
+    -E 's/(numlock )(.*)( encrypt)/\2\1encrypt/' \
+    "${MKINIT_CONF}"
+else
+  log "numlock hook already present, skipping"
+fi
+
+# Regenerate initramfs
+log "Regenerating initramfs"
+mkinitcpio -P
