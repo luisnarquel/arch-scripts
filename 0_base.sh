@@ -65,38 +65,11 @@ log "Base-installation complete"
 # ===== Install additional fonts =====
 sudo pacman -S --noconfirm --needed ttf-jetbrains-mono-nerd
 
-# ===== Enable Num Lock in early boot (AUTO-DETECT) =====
-log "Configuring Num Lock for early boot (initramfs)"
+# ===== Enable Num Lock on TTYs via systemd =====
+log "Enabling Num Lock on TTYs (systemd service)"
 
-MKINIT_CONF="/etc/mkinitcpio.conf"
-HOOKS_LINE="$(grep '^HOOKS=' "${MKINIT_CONF}")"
+sudo -u "${SUDO_USER}" -H yay -S --noconfirm --needed systemd-numlockontty
 
-if echo "${HOOKS_LINE}" | grep -qw systemd; then
-  log "Detected systemd-based initramfs"
-  NUMLOCK_PKG="mkinitcpio-sd-numlock"
-  NUMLOCK_HOOK="sd-numlock"
-else
-  log "Detected classic mkinitcpio"
-  NUMLOCK_PKG="mkinitcpio-numlock"
-  NUMLOCK_HOOK="numlock"
-fi
-
-# Install correct numlock hook
-sudo -u "${SUDO_USER}" -H yay -S --noconfirm --needed "${NUMLOCK_PKG}"
-
-# Add hook if missing
-if ! echo "${HOOKS_LINE}" | grep -qw "${NUMLOCK_HOOK}"; then
-  log "Adding ${NUMLOCK_HOOK} hook to mkinitcpio.conf"
-
-  sed -i -E \
-    "s/\(([^)]*)\)/(\1 ${NUMLOCK_HOOK})/" \
-    "${MKINIT_CONF}"
-else
-  log "${NUMLOCK_HOOK} already present, skipping"
-fi
-
-# Regenerate initramfs
-log "Regenerating initramfs"
-mkinitcpio -P
+systemctl enable numLockOnTty.service
 
 log "Base-installation complete"
