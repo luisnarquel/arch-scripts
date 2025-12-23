@@ -65,30 +65,38 @@ log "Base-installation complete"
 # ===== Install additional fonts =====
 sudo pacman -S --noconfirm --needed ttf-jetbrains-mono-nerd
 
-# ===== Enable Num Lock early (mkinitcpio) =====
-log "Enabling Num Lock during early boot (initramfs)"
-
-# Install mkinitcpio-numlock (AUR)
-sudo -u "${SUDO_USER}" -H yay -S --noconfirm --needed mkinitcpio-numlock
+# ===== Enable Num Lock in early boot (AUTO-DETECT) =====
+log "Configuring Num Lock for early boot (initramfs)"
 
 MKINIT_CONF="/etc/mkinitcpio.conf"
+HOOKS_LINE="$(grep '^HOOKS=' "${MKINIT_CONF}")"
 
-# Ensure numlock hook exists before encrypt
-if ! grep -q '\bnumlock\b' "${MKINIT_CONF}"; then
-  log "Adding numlock hook to mkinitcpio.conf"
+if echo "${HOOKS_LINE}" | grep -qw systemd; then
+  log "Detected systemd-based initramfs"
+  NUMLOCK_PKG="mkinitcpio-sd-numlock"
+  NUMLOCK_HOOK="sd-numlock"
+else
+  log "Detected classic mkinitcpio"
+  NUMLOCK_PKG="mkinitcpio-numlock"
+  NUMLOCK_HOOK="numlock"
+fi
 
-  sed -i \
-    -E 's/\(([^)]*)\)/(\1 numlock)/' \
-    "${MKINIT_CONF}"
+# Install correct numlock hook
+sudo -u "${SUDO_USER}" -H yay -S --noconfirm --needed "${NUMLOCK_PKG}"
 
-  # Move numlock before encrypt if encrypt exists
-  sed -i \
-    -E 's/(numlock )(.*)( encrypt)/\2\1encrypt/' \
+# Add hook if missing
+if ! echo "${HOOKS_LINE}" | grep -qw "${NUMLOCK_HOOK}"; then
+  log "Adding ${NUMLOCK_HOOK} hook to mkinitcpio.conf"
+
+  sed -i -E \
+    "s/\(([^)]*)\)/(\1 ${NUMLOCK_HOOK})/" \
     "${MKINIT_CONF}"
 else
-  log "numlock hook already present, skipping"
+  log "${NUMLOCK_HOOK} already present, skipping"
 fi
 
 # Regenerate initramfs
 log "Regenerating initramfs"
 mkinitcpio -P
+
+log "Base-installation complete"
