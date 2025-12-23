@@ -33,12 +33,9 @@ EOF
 log "Configuring SDDM"
 sudo mkdir -p /etc/sddm.conf.d
 
-cat <<EOF | sudo tee /etc/sddm.conf.d/autologin.conf
+cat <<EOF | sudo tee /etc/sddm.conf.d/default.conf
 [General]
 DisplayServer=wayland
-
-[Autologin]
-User=$USER
 Session=hyprland-uwsm
 
 [Theme]
